@@ -18,12 +18,12 @@
     </div>
 
     <script>
-        const form = document.getElementById('loginform');
+        const form = document.getElementById('loginForm');
         const messageDiv = document.getElementById('message');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value();
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value
             messageDiv.textContent = ''
 

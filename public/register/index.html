@@ -9,7 +9,7 @@
     <div class="container">
         <h1>Registrasi</h1>
         <div id="message"></div>
-        <form id="registratoinForm">
+        <form id="registrationForm">
             <input type="text" id="username" placeholder="Username" required>
             <input type="password" id="password" placeholder="Password" required>
             <button type="submit">Daftar</button>
@@ -29,7 +29,7 @@
             messageDiv.style.color = 'red';
 
             try {
-                const response = await fetch('api/register', {
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password }),

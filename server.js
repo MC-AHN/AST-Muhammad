@@ -11,7 +11,7 @@ import { serveStatic } from '@hono/node-server/serve-static'
 
 // Koneksi DB
 const app = new Hono()
-app.use('/*'. serveStatic({ root: './public'}));
+app.use('/*', serveStatic({ root: './public'}));
 
 app.get('/', (c) => {
     return c.html(`<h1>Tim Pengembang</h1><h2>Muhammad</h2>`);
@@ -34,52 +34,52 @@ app.post('/api/login', async (c) => {
     const { username, password } = await c.req.json();
     const user = await db.query.users.findFirst({ where: (users, {eq}) => eq(users.username, username)});
 
-    if(!user) return c.json({ success: false, massage: 'Username atau password salah'}, 401);
+    if(!user) return c.json({ success: false, message: 'Username atau password salah'}, 401);
 
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     setCookie(c, 'token', token, { httpOnly: true, sameSite: 'Lax', maxAge: 3600});
 
-    return c.json({ success: true, massage: 'Login berhasil'});
+    return c.json({ success: true, message: 'Login berhasil'});
 });
 
 // cek login atau cek cookie
 app.get('/api/me', (c) => {
     const token = getCookie(c, 'token');
-    if (!token) return c.json({ success: false, massage: 'Unauthorized'}, 401);
+    if (!token) return c.json({ success: false, message: 'Unauthorized'}, 401);
     try {
         const user = jwt.verify(token, process.env.JWT_SECRET);
 
         return c.json({ success: true, data: user});
     } catch (error) {
-        return c.json({ success:false, massage: 'Unauthorized' }, 401);
+        return c.json({ success:false, message: 'Unauthorized' }, 401);
     }
 });
 
 // API logout 
 app.post('/api/logout', (c) => {
     setCookie(c, 'token', '', { maxAge: -1 });
-    return c.json({ success: true, massage: 'Logout berhasil' });
+    return c.json({ success: true, message: 'Logout berhasil' });
 });
 
 // Menambahkan todos
 app.post('/api/todos', async (c) => {
     const token = getCookie(c, 'token');
-    if (!token) return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
     try {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         const { note } = await c.req.json();
         const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
         return c.json({ success: true, data: newTodo[0] }, 201);
     } catch (error) {
-        return c.json({ success: false, massage: 'Unauthorized' }, 401);
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
     }
 });
 
 // Api read all todo 
 app.get('/api/todos', async (c) => {
     const token = getCookie(c, 'token');
-    if(!token) return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    if(!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
     try {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         const userTodos = await db.query.todos.findMany({
@@ -87,7 +87,7 @@ app.get('/api/todos', async (c) => {
         });
         return c.json({ success: true, data: userTodos });
     } catch (error) {
-        return c.json({ success: false, massage: 'Unauthorized' }, 401);
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
     }
 });
 

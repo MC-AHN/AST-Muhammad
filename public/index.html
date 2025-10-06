@@ -12,7 +12,7 @@
         (async () => {
             try {
                 const response = await fetch('/api/me');
-                if (success) {
+                if (response.ok) {
                     const { success } = await response.json();
                     if (success) {
                         window.location.href = '/todos/';
@@ -24,9 +24,9 @@
                 }
             } catch (error) {
                 console.error('Error checking auth status:', error);
-                window.locatoin.href = '/login/';
+                window.location.href = '/login/';
             }
-        })
+        })();
     </script>
 </body>
 </html>

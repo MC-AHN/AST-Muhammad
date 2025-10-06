@@ -9,7 +9,7 @@
     <div>
         <header>
             <h1>Hallo, <span id="username"></span>!</h1>
-            <button id="logoutBtn">Logout</button>
+            <a href="/logout/">Logout</a>
         </header>
 
         <main>
@@ -18,7 +18,7 @@
                 <input type="text" id="noteInput" placeholder="Apa yang perlu dilakukan?" required />
                 <button type="submit">Tambah</button>
             </form>
-            <ul id="todolist"></ul>
+            <ul id="todoList"></ul>
         </main>
     </div>
 
@@ -27,7 +27,7 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const addTodoForm = document.getElementById('addTodoForm');
         const noteInput = document.getElementById('noteInput');
-        const todolist = document.getElementById('todolist');
+        const todoList = document.getElementById('todoList');
 
         // 1. periksa status login & dapatkan data pengguna
         ( async () => {
@@ -52,14 +52,14 @@
         // 2. Fungsi untuk mengambil dan menampilkan todos
         const fetchTodos = async () => {
             try {
-                const response = await fetch('api/todos');
+                const response = await fetch('/api/todos');
                 const { success, data } = await response.json();
                 if (success) {
-                    todolist.innerHTML = '';
+                    todoList.innerHTML = '';
                     data.forEach((todo) => {
                         const li = document.createElement('li');
                         li.textContent= todo.note;
-                        todolist.appendChild(li);
+                        todoList.appendChild(li);
                     });
                 }
             } catch (error) {
@@ -73,7 +73,7 @@
                 if (!note) return;
 
                 try {
-                    const response = await fetch('api/todos', {
+                    const response = await fetch('/api/todos', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ note }),
