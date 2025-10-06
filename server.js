@@ -1,16 +1,17 @@
 import 'dotenv/config';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import { db } from './db/index.js'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { users, todos } from './db/schema.js'
+import { serveStatic } from '@hono/node-server/serve-static'
 
 // Koneksi DB
 const app = new Hono()
+app.use('/*'. serveStatic({ root: './public'}));
 
 app.get('/', (c) => {
     return c.html(`<h1>Tim Pengembang</h1><h2>Muhammad</h2>`);
@@ -75,7 +76,7 @@ app.post('/api/todos', async (c) => {
     }
 });
 
-// Api read all todo
+// Api read all todo 
 app.get('/api/todos', async (c) => {
     const token = getCookie(c, 'token');
     if(!token) return c.json({ success: false, massage: 'Unauthorized' }, 401);
