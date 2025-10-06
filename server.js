@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { db } from './db/index.js'
-import { users } from './db/schema.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
+import { users, todos } from './db/schema.js'
 
 // Koneksi DB
 const app = new Hono()
@@ -59,6 +59,20 @@ app.get('/api/me', (c) => {
 app.post('/api/logout', (c) => {
     setCookie(c, 'token', '', { maxAge: -1 });
     return c.json({ success: true, massage: 'Logout berhasil' });
+});
+
+// Menambahkan todos
+app.post('/api/todos', async (c) => {
+    const token = getCookie(c, 'token');
+    if (!token) return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const { note } = await c.req.json();
+        const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
+        return c.json({ success: true, data: newTodo[0] }, 201);
+    } catch (error) {
+        return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    }
 });
 
 // Jalankan Server
