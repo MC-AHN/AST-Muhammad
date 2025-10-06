@@ -75,6 +75,21 @@ app.post('/api/todos', async (c) => {
     }
 });
 
+// Api read all todo
+app.get('/api/todos', async (c) => {
+    const token = getCookie(c, 'token');
+    if(!token) return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const userTodos = await db.query.todos.findMany({
+            where: (todos, { eq }) => eq(todos.userId, user.id)
+        });
+        return c.json({ success: true, data: userTodos });
+    } catch (error) {
+        return c.json({ success: false, massage: 'Unauthorized' }, 401);
+    }
+});
+
 // Jalankan Server
 
 console.log('🚀 Server is running on http://localhost:5001');
